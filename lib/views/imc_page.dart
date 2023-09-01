@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_const
 
+import 'package:atividade_ebac_imc/controllers/imc_controller.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 
@@ -11,12 +12,12 @@ class ImcPage extends StatefulWidget {
 }
 
 class _ImcPageState extends State<ImcPage> {
-  final pesoController = TextEditingController();
-  final alturaController = TextEditingController();
+  ImcController imcController = ImcController();
 
   @override
   void dispose() {
-    pesoController.dispose();
+    imcController.pesoController.dispose();
+    imcController.alturaController.dispose();
     super.dispose();
   }
 
@@ -37,7 +38,7 @@ class _ImcPageState extends State<ImcPage> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: pesoController,
+                    controller: imcController.pesoController,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
@@ -62,7 +63,7 @@ class _ImcPageState extends State<ImcPage> {
                   // child: Padding(
                   // padding: const EdgeInsets.only(top: 20.0),
                   child: TextField(
-                    controller: alturaController,
+                    controller: imcController.alturaController,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
@@ -104,8 +105,10 @@ class _ImcPageState extends State<ImcPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text('Peso: ${pesoController.text}'),
-                                  Text('Altura: ${alturaController.text}'),
+                                  Text(
+                                      'Peso: ${imcController.pesoController.text}'),
+                                  Text(
+                                      'Altura: ${imcController.alturaController.text}'),
                                 ],
                               ),
                               actions: [
