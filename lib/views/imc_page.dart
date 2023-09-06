@@ -1,6 +1,10 @@
 // ignore_for_file: unnecessary_const
 
 import 'package:atividade_ebac_imc/controllers/imc_controller.dart';
+import 'package:atividade_ebac_imc/models/imc_model.dart';
+import 'package:atividade_ebac_imc/widgets/alert_title.dart';
+import 'package:atividade_ebac_imc/widgets/imc_alert_item.dart';
+import 'package:atividade_ebac_imc/widgets/mensagem_imc.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 
@@ -45,7 +49,8 @@ class _ImcPageState extends State<ImcPage> {
                     decoration: const InputDecoration(
                       isDense: true,
                       contentPadding: EdgeInsets.all(8),
-                      hintText: 'Informe sua altura',
+                      label: Text('Peso'),
+                      hintText: 'Informe seu peso',
                       hintStyle:
                           TextStyle(fontStyle: FontStyle.italic, fontSize: 12),
                       border: OutlineInputBorder(
@@ -93,38 +98,125 @@ class _ImcPageState extends State<ImcPage> {
               child: Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Center(child: Text('Title')),
-                              content: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                      'Peso: ${imcController.pesoController.text}'),
-                                  Text(
-                                      'Altura: ${imcController.alturaController.text}'),
-                                ],
-                              ),
-                              actions: [
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
+                    child: ValueListenableBuilder(
+                      valueListenable: imcController.botaoProcessar,
+                      builder: (context, value, child) {
+                        return ElevatedButton(
+                          onPressed: !value
+                              ? null
+                              : () {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) {
+                                      ImcModel imcModel =
+                                          imcController.processarIMC();
+                                      return AlertDialog(
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(32),
+                                          ),
+                                        ),
+                                        titlePadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 0),
+                                        titleTextStyle: const TextStyle(
+                                            color: Colors.white, fontSize: 30),
+                                        title: const AlertTitle(),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 0),
+                                        content: imcController.resultadoIMC ==
+                                                -999
+                                            ? const Center(
+                                                heightFactor: 2,
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.warning,
+                                                      size: 30,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    Padding(
+                                                      padding: EdgeInsets.only(
+                                                          top: 8),
+                                                      child: Text(
+                                                          'Os dados nao foram\ninformados corretamente.'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            : Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  ImcAlertItem(
+                                                    icon: const Icon(
+                                                      Icons.accessibility_new,
+                                                      size: 30,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    descricao: 'Peso',
+                                                    valorImc: imcModel.peso,
+                                                  ),
+                                                  const Divider(
+                                                    height: 1,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  ImcAlertItem(
+                                                    icon: const Icon(
+                                                      Icons
+                                                          .accessibility_rounded,
+                                                      size: 30,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    descricao: 'Altura',
+                                                    valorImc: imcModel.altura,
+                                                  ),
+                                                  const Divider(
+                                                    height: 1,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  ImcAlertItem(
+                                                    icon: const Icon(
+                                                      Icons.show_chart_outlined,
+                                                      size: 30,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    descricao: 'IMC',
+                                                    valorImc: imcController
+                                                        .resultadoIMC,
+                                                  ),
+                                                  MensagemIMC(
+                                                      imcModel: imcModel)
+                                                ],
+                                              ),
+                                        actions: [
+                                          TextButton(
+                                              style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          Colors.orange
+                                                              .withOpacity(
+                                                                  0.1))),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                                FocusManager
+                                                    .instance.primaryFocus
+                                                    ?.unfocus();
+                                              },
+                                              child: const Icon(Icons.close))
+                                        ],
+                                      );
                                     },
-                                    child: const Icon(Icons.close))
-                              ],
-                            );
-                          },
+                                  );
+                                },
+                          child: const Text('Calcular IMC'),
                         );
                       },
-                      child: const Text('Calcular IMC'),
                     ),
                   ),
                 ],
@@ -135,4 +227,4 @@ class _ImcPageState extends State<ImcPage> {
       ),
     );
   } //widget build
-} //class _ImcPageState
+}
